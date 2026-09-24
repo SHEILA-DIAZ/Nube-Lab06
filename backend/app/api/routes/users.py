@@ -5,6 +5,7 @@ from backend.app.database.database import get_db
 from backend.app.models.models import Usuario, Rol, Departamento
 from backend.app.auth.dependencies import obtener_usuario_actual
 from backend.app.auth.security import hash_password
+from backend.app.services.rbac_service import tiene_permiso
 
 
 router = APIRouter(
@@ -18,6 +19,15 @@ def listar_usuarios(
     db: Session = Depends(get_db),
     usuario_actual: Usuario = Depends(obtener_usuario_actual)
 ):
+    if not tiene_permiso(
+        usuario_actual.rol.nombre,
+        "GESTIONAR_USUARIOS"
+    ):
+        raise HTTPException(
+            status_code=403,
+            detail="No tiene permisos para consultar usuarios"
+        )
+
     usuarios = db.query(Usuario).all()
 
     return [
@@ -42,10 +52,13 @@ def crear_usuario(
     db: Session = Depends(get_db),
     usuario_actual: Usuario = Depends(obtener_usuario_actual)
 ):
-    if usuario_actual.rol.nombre != "ADMINISTRADOR":
+    if not tiene_permiso(
+        usuario_actual.rol.nombre,
+        "GESTIONAR_USUARIOS"
+    ):
         raise HTTPException(
             status_code=403,
-            detail="Solo el administrador puede gestionar usuarios"
+            detail="No tiene permisos para gestionar usuarios"
         )
 
     correo = datos.get("correo")
@@ -124,10 +137,13 @@ def actualizar_usuario(
     db: Session = Depends(get_db),
     usuario_actual: Usuario = Depends(obtener_usuario_actual)
 ):
-    if usuario_actual.rol.nombre != "ADMINISTRADOR":
+    if not tiene_permiso(
+        usuario_actual.rol.nombre,
+        "GESTIONAR_USUARIOS"
+    ):
         raise HTTPException(
             status_code=403,
-            detail="Solo el administrador puede gestionar usuarios"
+            detail="No tiene permisos para gestionar usuarios"
         )
 
     usuario = db.query(Usuario).filter(

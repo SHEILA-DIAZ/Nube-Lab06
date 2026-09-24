@@ -2,6 +2,8 @@ from fastapi import FastAPI
 
 from backend.app.api.routes.auth import router as auth_router
 from backend.app.api.routes.documents import router as documents_router
+from backend.app.api.routes.users import router as users_router
+from backend.app.api.routes.audit import router as audit_router
 
 
 app = FastAPI(
@@ -12,6 +14,8 @@ app = FastAPI(
 
 app.include_router(auth_router)
 app.include_router(documents_router)
+app.include_router(users_router)
+app.include_router(audit_router)
 
 
 @app.get("/")

@@ -1,110 +1,121 @@
-\# SecureDocs
+# SecureDocs
 
+Sistema de gestión segura de documentos mediante autenticación, RBAC y ABAC.
 
+## Descripción
 
-Sistema web para la gestión segura de documentos mediante autenticación, autorización RBAC y políticas ABAC.
+SecureDocs permite gestionar documentos y controlar el acceso de los usuarios mediante:
 
+- Autenticación con usuario y contraseña.
+- Tokens JWT.
+- RBAC (control basado en roles).
+- ABAC (control basado en atributos).
+- Gestión de documentos.
+- Aprobación de documentos.
+- Registro de auditoría.
 
+## Tecnologías
 
-\## Descripción
+- Python
+- FastAPI
+- SQLAlchemy
+- SQLite
+- Pydantic
+- JWT
+- Passlib / bcrypt
+- Swagger / OpenAPI
+- Git y GitHub
 
+## Roles
 
+- ADMINISTRADOR
+- GERENTE
+- SUPERVISOR
+- EMPLEADO
+- AUDITOR
+- INVITADO
 
-SecureDocs es una aplicación web desarrollada para gestionar documentos y controlar el acceso a los recursos mediante un modelo combinado de:
+## Seguridad
 
+El acceso se valida mediante RBAC y ABAC.
 
+RBAC controla los permisos según el rol del usuario.
 
-\- Autenticación mediante usuario y contraseña.
+ABAC valida condiciones como:
 
-\- Tokens JWT.
+- Departamento.
+- Nivel de seguridad.
+- Propiedad del documento.
+- Horario.
+- País.
+- Dispositivo.
+- Estado del usuario.
+- Condiciones para invitados.
 
-\- Control de acceso basado en roles (RBAC).
+## Base de datos
 
-\- Control de acceso basado en atributos (ABAC).
+El sistema utiliza SQLite con las tablas:
 
-\- Registro de auditoría.
+- departamentos
+- roles
+- permisos
+- rol_permisos
+- usuarios
+- documentos
+- auditoria
 
-\- Gestión de documentos.
+## Ejecución
 
-\- Aprobación de documentos.
+Crear el entorno virtual:
 
+py -m venv .venv
 
+Activarlo:
 
-La autorización se realiza mediante la evaluación conjunta de RBAC y ABAC.
+.venv\Scripts\activate
 
+Instalar dependencias:
 
+pip install -r requirements.txt
 
-\## Tecnologías utilizadas
+Inicializar la base de datos:
 
+python -m backend.app.database.init_db
 
+Ejecutar:
 
-\- Python
+uvicorn backend.app.main:app --reload
 
-\- FastAPI
+## Swagger
 
-\- SQLAlchemy
+La documentación y pruebas de la API están disponibles en:
 
-\- SQLite
+http://127.0.0.1:8000/docs
 
-\- Pydantic
+## Pruebas
 
-\- JWT
+Se realizaron pruebas de:
 
-\- Passlib / bcrypt
-
-\- HTML, CSS y JavaScript
-
-\- Swagger / OpenAPI
-
-\- Git y GitHub
-
-
-
-\## Estructura del proyecto
-
-
-
-```text
-
-Nube-Lab06/
-
-│
-
-├── backend/
-
-│   └── app/
-
-│       ├── api/
-
-│       ├── auth/
-
-│       ├── audit/
-
-│       ├── core/
-
-│       ├── database/
-
-│       ├── models/
-
-│       ├── policies/
-
-│       ├── routes/
-
-│       ├── schemas/
-
-│       └── services/
-
-│
-
-├── frontend/
-
-├── docs/
-
-├── tests/
-
-├── .gitignore
-
-├── README.md
-
-└── requirements.txt
-
+- Autorización RBAC.
+- Políticas ABAC.
+- Creación de documentos.
+- Consulta de documentos.
+- Modificación de documentos.
+- Eliminación de documentos.
+- Aprobación de documentos.
+- Usuarios inactivos.
+- Restricciones por departamento.
+- Restricciones por nivel de seguridad.
+- Restricciones por horario.
+- Restricciones por país.
+- Restricciones por dispositivo.
+- Usuarios invitados.
+- Auditoría.
+
+## Repositorio
+
+https://github.com/SHEILA-DIAZ/Nube-Lab06
+
+## Autora
+
+Sheila Diaz

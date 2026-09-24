@@ -1,19 +1,37 @@
+from sqlalchemy.orm import Session
+
 from backend.app.services.rbac_service import tiene_permiso
 from backend.app.policies.abac_policy import Entorno, evaluar_abac
+from backend.app.audit.audit_service import registrar_auditoria
 
 
 def autorizar(
     usuario,
     documento,
     accion: str,
-    entorno: Entorno
+    entorno: Entorno,
+    db: Session | None = None
 ) -> tuple[bool, str]:
 
-    # PASO 1: RBAC
-    if not tiene_permiso(usuario.rol.nombre, accion):
-        return False, f"RBAC deniega la acción: {accion}"
+    recurso = f"documento/{documento.id}"
 
-    # PASO 2: ABAC
+    # Primero se verifica RBAC
+    if not tiene_permiso(usuario.rol.nombre, accion):
+        motivo = f"RBAC deniega la acción: {accion}"
+
+        if db:
+            registrar_auditoria(
+                db=db,
+                usuario=usuario.correo,
+                recurso=recurso,
+                accion=accion,
+                resultado="DENEGADO",
+                motivo=motivo
+            )
+
+        return False, motivo
+
+    # Después se verifica ABAC
     resultado_abac = evaluar_abac(
         usuario,
         documento,
@@ -22,7 +40,30 @@ def autorizar(
     )
 
     if not resultado_abac.permitido:
-        return False, f"ABAC deniega: {resultado_abac.motivos[-1]}"
+        motivo = f"ABAC deniega: {resultado_abac.motivos[-1]}"
 
-    # PASO 3: Autorización concedida
-    return True, "RBAC y ABAC permiten la operación."
+        if db:
+            registrar_auditoria(
+                db=db,
+                usuario=usuario.correo,
+                recurso=recurso,
+                accion=accion,
+                resultado="DENEGADO",
+                motivo=motivo
+            )
+
+        return False, motivo
+
+    motivo = "RBAC y ABAC permiten la operación."
+
+    if db:
+        registrar_auditoria(
+            db=db,
+            usuario=usuario.correo,
+            recurso=recurso,
+            accion=accion,
+            resultado="PERMITIDO",
+            motivo=motivo
+        )
+
+    return True, motivo

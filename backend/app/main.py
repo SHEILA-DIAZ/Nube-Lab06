@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 
 from backend.app.api.routes.auth import router as auth_router
+from backend.app.api.routes.documents import router as documents_router
+
 
 app = FastAPI(
     title="SecureDocs API",
@@ -9,6 +11,7 @@ app = FastAPI(
 )
 
 app.include_router(auth_router)
+app.include_router(documents_router)
 
 
 @app.get("/")
@@ -21,6 +24,4 @@ def inicio():
 
 @app.get("/health")
 def health():
-    return {
-        "status": "ok"
-    }
+    return {"status": "ok"}
